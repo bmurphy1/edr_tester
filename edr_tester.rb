@@ -87,6 +87,7 @@ class EDRTester
       type: "run_process",
       username: Etc.getlogin,
       process_name: File.basename(exec_path),
+      process_command_line: $0 + ' ' + ARGV.join(' '),
       process_id: pid,
       timestamp: Time.now.utc.iso8601
     }

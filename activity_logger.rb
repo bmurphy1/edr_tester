@@ -7,7 +7,7 @@ class ActivityLogger
 
   def log_activity(activity)
     File.open(@log_file, 'a') do |file|
-      file.write(JSON.pretty_generate(@activities))
+      file.puts(activity.to_json)
     end
   end
 end
