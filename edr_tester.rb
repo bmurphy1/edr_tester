@@ -7,4 +7,10 @@ class EDRTester
   def create_file(file_name)
     File.open(file_name, "w").close
   end
+
+  def modify_file(file_name, content)
+    File.open(file_name, "a") do |file|
+      file.write(content)
+    end
+  end
 end

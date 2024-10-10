@@ -18,4 +18,23 @@ RSpec.describe EDRTester do
       expect(File.exist?(file_name)).to be true
     end
   end
+
+  context "file modification" do
+    let(:file_name) { "test_file_modification.txt" }
+    let(:content) { "Content of this file." }
+
+    around do |example|
+      File.open(file_name, "w") do |file|
+        file.write(content)
+      end
+      example.run
+      File.delete(file_name)
+    end
+
+    it "appends a file with specified content" do
+      subject.modify_file(file_name, " New Content.")
+
+      expect(File.read(file_name)).to eq(content + " New Content.")
+    end
+  end
 end
