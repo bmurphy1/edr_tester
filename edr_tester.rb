@@ -13,4 +13,8 @@ class EDRTester
       file.write(content)
     end
   end
+
+  def delete_file(file_name)
+    File.delete(file_name)
+  end
 end

@@ -37,4 +37,18 @@ RSpec.describe EDRTester do
       expect(File.read(file_name)).to eq(content + " New Content.")
     end
   end
+
+  context "file deletion" do
+    let(:file_name) { "test_file_deletion.txt" }
+
+    before do
+      File.open(file_name, "w").close
+    end
+
+    it "deletes a specified file" do
+      subject.delete_file(file_name)
+
+      expect(File.exist?(file_name)).to be false
+    end
+  end
 end
