@@ -65,6 +65,11 @@ RSpec.describe EDRTester do
 
     before do
       allow(TCPSocket).to receive(:new).with(host, port).and_return(mock_socket)
+      allow(Process).to receive(:pid).and_return(789)
+      allow(mock_socket).to receive(:write).with(data).and_return(data.bytesize)
+      allow(mock_socket).to receive(:close)
+      allow(mock_socket).to receive_message_chain(:local_address, :ip_address).and_return("127.0.0.1")
+      allow(mock_socket).to receive_message_chain(:local_address, :ip_port).and_return(80)
     end
 
     it "opens a network connection and sends data" do
@@ -73,6 +78,25 @@ RSpec.describe EDRTester do
 
       subject.send_network_data(host, port, data)
     end
+
+    it "logs the desired attributes" do
+      subject.send_network_data(host, port, data)
+
+      expect(logger).to have_received(:log_activity) do |args|
+        expect(args[:type]).to eq("send_network_data")
+        expect(args[:username]).to eq(Etc.getlogin)
+        expect(args[:destination_address]).to eq(host)
+        expect(args[:destination_port]).to eq(port)
+        expect(args[:source_address]).to be_a(String)
+        expect(args[:source_port]).to be_a(Integer)
+        expect(args[:bytes_sent]).to eq(data.bytesize)
+        expect(args[:protocol]).to eq("TCP")
+        expect(args[:process_name]).to eq($0)
+        expect(args[:process_command_line]).to eq($0 + ' ' + ARGV.join(' '))
+        expect(args[:process_id]).to eq(789)
+        expect(args[:timestamp]).to be_a(String)
+      end
+    end
   end
 
   context "starting a process" do
@@ -80,7 +104,6 @@ RSpec.describe EDRTester do
 
     before do
       allow(Process).to receive(:spawn).and_return(789)
-
     end
 
     it "runs the specified command" do

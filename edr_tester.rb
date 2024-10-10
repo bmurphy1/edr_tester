@@ -24,8 +24,24 @@ class EDRTester
 
   def send_network_data(host, port, data)
     socket = TCPSocket.new(host, port)
-    socket.write(data)
+    bytes_sent = socket.write(data)
     socket.close
+
+    activity = {
+      type: "send_network_data",
+      username: Etc.getlogin,
+      destination_address: host,
+      destination_port: port,
+      source_address: socket.local_address.ip_address,
+      source_port: socket.local_address.ip_port,
+      bytes_sent: bytes_sent,
+      protocol: "TCP",
+      process_name: $0,
+      process_command_line: $0 + ' ' + ARGV.join(' '),
+      process_id: Process.pid,
+      timestamp: Time.now.utc.iso8601
+    }
+    @logger.log_activity(activity)
   end
 
   def run_process(exec_path)
