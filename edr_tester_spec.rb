@@ -3,7 +3,12 @@ require_relative './edr_tester'
 
 RSpec.describe EDRTester do
 
-  subject { EDRTester.new() }
+  let(:logger) { instance_double('ActivityLogger') }
+  subject { EDRTester.new(logger) }
+
+  before do
+    allow(logger).to receive(:log_activity)
+  end
 
   context "file creation" do
     let(:file_name) { "test_file_creation.txt" }
@@ -71,16 +76,29 @@ RSpec.describe EDRTester do
   end
 
   context "starting a process" do
-    let(:command) { "ls" }
+    let(:exec_path) { "/bin/ls" }
 
     before do
-      allow(Kernel).to receive(:system)
+      allow(Process).to receive(:spawn).and_return(789)
+
     end
 
     it "runs the specified command" do
-      expect(Kernel).to receive(:system)
+      expect(Process).to receive(:spawn).with(exec_path)
 
-      subject.run_process(command)
+      subject.run_process(exec_path)
+    end
+
+    it "logs the desired attributes" do
+      subject.run_process(exec_path)
+
+      expect(logger).to have_received(:log_activity) do |args|
+        expect(args[:type]).to eq("run_process")
+        expect(args[:username]).to eq(Etc.getlogin)
+        expect(args[:process_name]).to eq(File.basename(exec_path))
+        expect(args[:process_id]).to eq(789)
+        expect(args[:timestamp]).to be_a(String)
+      end
     end
   end
 end

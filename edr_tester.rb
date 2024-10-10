@@ -1,9 +1,11 @@
 require 'socket'
+require 'etc'
+require 'time'
 
 class EDRTester
 
-  def initialize
-    # logger will go here later
+  def initialize(logger)
+    @logger = logger
   end
 
   def create_file(file_name)
@@ -26,7 +28,16 @@ class EDRTester
     socket.close
   end
 
-  def run_process(command)
-    Kernel.system(command)
+  def run_process(exec_path)
+    pid = Process.spawn(exec_path)
+
+    activity = {
+      type: "run_process",
+      username: Etc.getlogin,
+      process_name: File.basename(exec_path),
+      process_id: pid,
+      timestamp: Time.now.utc.iso8601
+    }
+    @logger.log_activity(activity)
   end
 end
