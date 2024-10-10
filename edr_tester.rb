@@ -1,3 +1,5 @@
+require 'socket'
+
 class EDRTester
 
   def initialize
@@ -16,5 +18,11 @@ class EDRTester
 
   def delete_file(file_name)
     File.delete(file_name)
+  end
+
+  def send_network_data(host, port, data)
+    socket = TCPSocket.new(host, port)
+    socket.write(data)
+    socket.close
   end
 end

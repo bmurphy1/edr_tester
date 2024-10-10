@@ -51,4 +51,22 @@ RSpec.describe EDRTester do
       expect(File.exist?(file_name)).to be false
     end
   end
+
+  context "network activity" do
+    let(:host) { "localhost"}
+    let(:port) { 9001 }
+    let(:data) { "I'm on the network." }
+    let(:mock_socket) { instance_double(TCPSocket) }
+
+    before do
+      allow(TCPSocket).to receive(:new).with(host, port).and_return(mock_socket)
+    end
+
+    it "opens a network connection and sends data" do
+      expect(mock_socket).to receive(:write).with(data)
+      expect(mock_socket).to receive(:close)
+
+      subject.send_network_data(host, port, data)
+    end
+  end
 end
