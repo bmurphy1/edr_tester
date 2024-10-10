@@ -25,4 +25,8 @@ class EDRTester
     socket.write(data)
     socket.close
   end
+
+  def run_process(command)
+    Kernel.system(command)
+  end
 end

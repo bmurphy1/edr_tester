@@ -69,4 +69,18 @@ RSpec.describe EDRTester do
       subject.send_network_data(host, port, data)
     end
   end
+
+  context "starting a process" do
+    let(:command) { "ls" }
+
+    before do
+      allow(Kernel).to receive(:system)
+    end
+
+    it "runs the specified command" do
+      expect(Kernel).to receive(:system)
+
+      subject.run_process(command)
+    end
+  end
 end
