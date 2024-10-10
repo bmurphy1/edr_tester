@@ -10,16 +10,52 @@ class EDRTester
 
   def create_file(file_name)
     File.open(file_name, "w").close
+
+    activity = {
+      type: "file_activity",
+      descriptor: "create",
+      file_path: file_name,
+      username: Etc.getlogin,
+      process_name: $0,
+      process_command_line: $0 + ' ' + ARGV.join(' '),
+      process_id: Process.pid,
+      timestamp: Time.now.utc.iso8601
+    }
+    @logger.log_activity(activity)
   end
 
   def modify_file(file_name, content)
     File.open(file_name, "a") do |file|
       file.write(content)
     end
+
+    activity = {
+      type: "file_activity",
+      descriptor: "modify",
+      file_path: file_name,
+      username: Etc.getlogin,
+      process_name: $0,
+      process_command_line: $0 + ' ' + ARGV.join(' '),
+      process_id: Process.pid,
+      timestamp: Time.now.utc.iso8601
+    }
+    @logger.log_activity(activity)
   end
 
   def delete_file(file_name)
     File.delete(file_name)
+
+    activity = {
+      type: "file_activity",
+      descriptor: "delete",
+      file_path: file_name,
+      username: Etc.getlogin,
+      process_name: $0,
+      process_command_line: $0 + ' ' + ARGV.join(' '),
+      process_id: Process.pid,
+      timestamp: Time.now.utc.iso8601
+    }
+    @logger.log_activity(activity)
   end
 
   def send_network_data(host, port, data)

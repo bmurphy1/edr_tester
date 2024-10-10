@@ -22,6 +22,21 @@ RSpec.describe EDRTester do
 
       expect(File.exist?(file_name)).to be true
     end
+
+    it "logs the desired attributes" do
+      subject.create_file(file_name)
+
+      expect(logger).to have_received(:log_activity)do |args|
+        expect(args[:type]).to eq("file_activity")
+        expect(args[:descriptor]).to eq("create")
+        expect(args[:file_path]).to eq(file_name)
+        expect(args[:username]).to eq(Etc.getlogin)
+        expect(args[:process_name]).to eq($0)
+        expect(args[:process_command_line]).to eq($0 + ' ' + ARGV.join(' '))
+        expect(args[:process_id]).to eq(Process.pid)
+        expect(args[:timestamp]).to be_a(String)
+      end
+    end
   end
 
   context "file modification" do
@@ -41,6 +56,21 @@ RSpec.describe EDRTester do
 
       expect(File.read(file_name)).to eq(content + " New Content.")
     end
+
+    it "logs the desired attributes" do
+      subject.modify_file(file_name, " New Content.")
+
+      expect(logger).to have_received(:log_activity)do |args|
+        expect(args[:type]).to eq("file_activity")
+        expect(args[:descriptor]).to eq("modify")
+        expect(args[:file_path]).to eq(file_name)
+        expect(args[:username]).to eq(Etc.getlogin)
+        expect(args[:process_name]).to eq($0)
+        expect(args[:process_command_line]).to eq($0 + ' ' + ARGV.join(' '))
+        expect(args[:process_id]).to eq(Process.pid)
+        expect(args[:timestamp]).to be_a(String)
+      end
+    end
   end
 
   context "file deletion" do
@@ -54,6 +84,21 @@ RSpec.describe EDRTester do
       subject.delete_file(file_name)
 
       expect(File.exist?(file_name)).to be false
+    end
+
+    it "logs the desired attributes" do
+      subject.delete_file(file_name)
+
+      expect(logger).to have_received(:log_activity)do |args|
+        expect(args[:type]).to eq("file_activity")
+        expect(args[:descriptor]).to eq("delete")
+        expect(args[:file_path]).to eq(file_name)
+        expect(args[:username]).to eq(Etc.getlogin)
+        expect(args[:process_name]).to eq($0)
+        expect(args[:process_command_line]).to eq($0 + ' ' + ARGV.join(' '))
+        expect(args[:process_id]).to eq(Process.pid)
+        expect(args[:timestamp]).to be_a(String)
+      end
     end
   end
 
