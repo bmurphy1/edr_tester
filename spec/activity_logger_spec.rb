@@ -1,6 +1,6 @@
 require 'rspec'
 require 'json'
-require_relative 'activity_logger'
+require_relative '../activity_logger'
 
 RSpec.describe ActivityLogger do
   let(:log_file) { "test_activity_log.json" }
@@ -17,6 +17,8 @@ RSpec.describe ActivityLogger do
 
     expect(File.exist?(log_file)).to eq(true)
     parsed_file = JSON.parse(File.read(log_file))
-    expect(parsed_file).to eq(activity)
+    expect(parsed_file).to eq(
+                             { "type" => "big_bang", "foo" => "bar" }
+                             )
   end
 end

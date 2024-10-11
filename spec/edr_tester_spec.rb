@@ -1,5 +1,5 @@
 require 'rspec'
-require_relative './edr_tester'
+require_relative '../edr_tester'
 
 RSpec.describe EDRTester do
 
